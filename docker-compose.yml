@@ -1,0 +1,47 @@
+version: '3.7'
+
+services:
+  nginx_rproxy: 
+    image: nginx:latest
+    container_name: nginx_rproxy
+    restart: unless-stopped
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf
+      - ./www:/data/www  
+    ports:
+      - 80:80
+      
+  postgres:
+      image: postgres:12.2
+      container_name: postgres
+      environment:
+        POSTGRES_DB: keycloak
+        POSTGRES_USER: keycloak
+        POSTGRES_PASSWORD: password
+
+  keycloak:
+      image: jboss/keycloak:9.0.2
+      volumes:
+      - ./keycloak/imports:/opt/jboss/keycloak/imports
+      command: 
+      - "-b 0.0.0.0 -Dkeycloak.import=/opt/jboss/keycloak/imports/realm-export.json"
+      container_name: keycloak
+      environment:
+        DB_VENDOR: POSTGRES
+        DB_ADDR: postgres
+        DB_DATABASE: keycloak
+        DB_USER: keycloak
+        DB_PASSWORD: password
+        KEYCLOAK_USER: admin
+        KEYCLOAK_PASSWORD: password
+        PROXY_ADDRESS_FORWARDING: "true"
+      ports:
+        - 8080:8080
+      depends_on:
+        - postgres
+
+  mailhog:
+    image: mailhog/mailhog:latest
+    container_name: mailhog
+    ports:
+      - "8025:8025"

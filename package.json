@@ -1,0 +1,10 @@
+{
+    "name": "facet-keycloak-react",
+    "version": "1.0.0",
+    "description": "FACET/Keycloak/React Project",
+    "license": "Apache-2.0",
+    "repository": "https://github.com/facetproject/facet-keycloak-react",
+    "scripts": {
+        "postinstall": " cd keycloak-react && npm install && cd ../keycloak/themes/facet/common/resources && npm install"
+    }
+}
