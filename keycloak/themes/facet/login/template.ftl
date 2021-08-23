@@ -34,10 +34,11 @@
 <body class="${properties.kcBodyClass!}">
   <div class="${properties.kcLoginClass!}">
     <div id="kc-header" class="${properties.kcHeaderClass!}">
-      <div id="kc-header-wrapper" class="${properties.kcHeaderWrapperClass!}">${kcSanitize(msg("loginTitleHtml",(realm.displayNameHtml!'')))?no_esc}</div>
+      <div id="kc-header-wrapper" class="${properties.kcHeaderWrapperClass!}"><!--${kcSanitize(msg("loginTitleHtml",(realm.displayNameHtml!'')))?no_esc}--></div>
     </div>
     <div class="${properties.kcFormCardClass!} <#if displayWide>${properties.kcFormCardAccountClass!}</#if>">
       <header class="${properties.kcFormHeaderClass!}">
+        <div style="text-align: center;"><img src="${url.resourcesPath}/img/FACET_Logo.svg" height="200" width="281" /></div>
         <#if realm.internationalizationEnabled  && locale.supported?size gt 1>
             <div id="kc-locale">
                 <div id="kc-locale-wrapper" class="${properties.kcLocaleWrapperClass!}">
