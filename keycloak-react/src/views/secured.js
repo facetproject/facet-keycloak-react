@@ -1,6 +1,8 @@
 import React, { Component } from 'react';
 import UserInfo from '../components/userProfile/userInfo';
 import Logout from '../components/userProfile/logout';
+import Logo from '../assets/images/FACET_Logo.svg';
+import '../assets/styles/App.css';
 import Keycloak from 'keycloak-js';
 
 
@@ -33,6 +35,9 @@ class Secured extends Component {
     if (this.state.keycloak) {
       if (this.state.authenticated) return (
         <div>
+          <header className="App-header">
+            <img src={Logo} className="App-logo" alt="logo" />
+          </header>
           <p>This is a Keycloak-secured component of your application. You shouldn't be able
           to see this unless you've authenticated with Keycloak.</p>
           <UserInfo keycloak={this.state.keycloak} />

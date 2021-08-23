@@ -11,12 +11,14 @@ class App extends Component {
     return (
       <BrowserRouter>
         <div className="container">
-          <ul>
-            <li><Link to="/">public component</Link></li>
-            <li><Link to="/secured">secured component</Link></li>
-          </ul>
-          <Route exact path="/" component={Landing} />
-          <Route path="/secured" component={Secured} />
+          {/* Reversed the original logic to take user to login page */}
+          <Route exact path="/landing" component={Landing} />
+          <Route path="/" component={Secured} />
+          {/*<ul>
+            <li><Link to="/landing">public component</Link></li>
+            <li><Link to="/">secured component</Link></li>
+          </ul>*/}
+          
         </div>
       </BrowserRouter>
     );

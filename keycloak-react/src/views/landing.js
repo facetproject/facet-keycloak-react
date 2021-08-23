@@ -9,15 +9,6 @@ class Welcome extends Component {
         <div className="App">
             <header className="App-header">
                 <img src={Logo} className="App-logo" alt="logo" />
-                <p>This is your public-facing component.</p>
-                <a
-                className="App-link"
-                href="https://reactjs.org"
-                target="_blank"
-                rel="noopener noreferrer"
-                >
-                Learn React
-                </a>
             </header>
         </div>
       );
