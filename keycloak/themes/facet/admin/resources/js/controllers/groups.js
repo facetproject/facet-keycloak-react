@@ -1,9 +1,9 @@
-module.controller('GroupListCtrl', function($scope, $route, $q, realm, Groups, GroupsCount, Group, GroupChildren, Notifications, $location, Dialog, ComponentUtils, $translate) {
+module.controller('GroupListCtrl', function($scope, $route, $q, realm, Groups, GroupsCount, Group, GroupChildren, Notifications, $location, Dialog, ComponentUtils) {
     $scope.realm = realm;
     $scope.groupList = [
         {
             "id" : "realm",
-            "name": $translate.instant('groups'),
+            "name": "Groups",
             "subGroups" : []
         }
     ];
@@ -40,13 +40,13 @@ module.controller('GroupListCtrl', function($scope, $route, $q, realm, Groups, G
         Groups.query(queryParams, function(entry) {
             promiseGetGroups.resolve(entry);
         }, function() {
-            promiseGetGroups.reject($translate.instant('group.fetch.fail', {params: queryParams}));
+            promiseGetGroups.reject('Unable to fetch ' + queryParams);
         });
         promiseGetGroups.promise.then(function(groups) {
             $scope.groupList = [
                 {
                     "id" : "realm",
-                    "name": $translate.instant('groups'),
+                    "name": "Groups",
                     "subGroups": ComponentUtils.sortGroups('name', groups)
                 }
             ];
@@ -69,7 +69,7 @@ module.controller('GroupListCtrl', function($scope, $route, $q, realm, Groups, G
         GroupsCount.query(countParams, function(entry) {
             promiseCount.resolve(entry);
         }, function() {
-            promiseCount.reject($translate.instant('group.fetch.fail', {params: countParams}));
+            promiseCount.reject('Unable to fetch ' + countParams);
         });
         promiseCount.promise.then(function(entry) {
             if(angular.isDefined(entry.count) && entry.count > $scope.pageSize) {
@@ -125,16 +125,16 @@ module.controller('GroupListCtrl', function($scope, $route, $q, realm, Groups, G
         if ($scope.cutNode === null) return;
         if (selected.id === $scope.cutNode.id) return;
         if (selected.id === 'realm') {
-            Groups.save({realm: realm.realm}, {id:$scope.cutNode.id, name: $scope.cutNode.name}, function() {
+            Groups.save({realm: realm.realm}, {id:$scope.cutNode.id}, function() {
                 $route.reload();
-                Notifications.success($translate.instant('group.move.success'));
+                Notifications.success("Group moved.");
 
             });
 
         } else {
-            GroupChildren.save({realm: realm.realm, groupId: selected.id}, {id:$scope.cutNode.id, name: $scope.cutNode.name}, function() {
+            GroupChildren.save({realm: realm.realm, groupId: selected.id}, {id:$scope.cutNode.id}, function() {
                 $route.reload();
-                Notifications.success($translate.instant('group.move.success'));
+                Notifications.success("Group moved.");
 
             });
 
@@ -144,17 +144,13 @@ module.controller('GroupListCtrl', function($scope, $route, $q, realm, Groups, G
 
     $scope.remove = function(selected) {
         if (selected === null) return;
-        Dialog.confirmWithButtonText(
-            $translate.instant('group.remove.confirm.title', {name: selected.name}),
-            $translate.instant('group.remove.confirm.message', {name: selected.name}),
-            $translate.instant('dialogs.delete.confirm'),
-            function() {
-                Group.remove({ realm: realm.realm, groupId : selected.id }, function() {
-                    $route.reload();
-                    Notifications.success($translate.instant('group.remove.success'));
-                });
-            }
-        );
+        Dialog.confirmDelete(selected.name, 'group', function() {
+            Group.remove({ realm: realm.realm, groupId : selected.id }, function() {
+                $route.reload();
+                Notifications.success("The group has been deleted.");
+            });
+        });
+
     };
 
     $scope.createGroup = function(selected) {
@@ -193,7 +189,7 @@ module.controller('GroupListCtrl', function($scope, $route, $q, realm, Groups, G
 
 });
 
-module.controller('GroupCreateCtrl', function($scope, $route, realm, parentId, Groups, Group, GroupChildren, Notifications, $location, $translate) {
+module.controller('GroupCreateCtrl', function($scope, $route, realm, parentId, Groups, Group, GroupChildren, Notifications, $location) {
     $scope.realm = realm;
     $scope.group = {};
     $scope.save = function() {
@@ -207,7 +203,7 @@ module.controller('GroupCreateCtrl', function($scope, $route, realm, parentId, G
                 var id = l.substring(l.lastIndexOf("/") + 1);
 
                 $location.url("/realms/" + realm.realm + "/groups/" + id);
-                Notifications.success($translate.instant('group.create.success'));
+                Notifications.success("Group Created.");
             })
 
         } else {
@@ -218,7 +214,7 @@ module.controller('GroupCreateCtrl', function($scope, $route, realm, parentId, G
                 var id = l.substring(l.lastIndexOf("/") + 1);
 
                 $location.url("/realms/" + realm.realm + "/groups/" + id);
-                Notifications.success($translate.instant('group.create.success'));
+                Notifications.success("Group Created.");
             })
 
         }
@@ -229,26 +225,21 @@ module.controller('GroupCreateCtrl', function($scope, $route, realm, parentId, G
     };
 });
 
-module.controller('GroupTabCtrl', function(Dialog, $scope, Current, Group, Notifications, $location, $translate) {
+module.controller('GroupTabCtrl', function(Dialog, $scope, Current, Group, Notifications, $location) {
     $scope.removeGroup = function() {
-        Dialog.confirmWithButtonText(
-            $translate.instant('group.remove.confirm.title', {name: $scope.group.name}),
-            $translate.instant('group.remove.confirm.message', {name: $scope.group.name}),
-            $translate.instant('dialogs.delete.confirm'),
-            function() {
-                Group.remove({
-                    realm : Current.realm.realm,
-                    groupId : $scope.group.id
-                }, function() {
-                    $location.url("/realms/" + Current.realm.realm + "/groups");
-                    Notifications.success($translate.instant('group.remove.success'));
-                });
-            }
-        );
+        Dialog.confirmDelete($scope.group.name, 'group', function() {
+            Group.remove({
+                realm : Current.realm.realm,
+                groupId : $scope.group.id
+            }, function() {
+                $location.url("/realms/" + Current.realm.realm + "/groups");
+                Notifications.success("The group has been deleted.");
+            });
+        });
     };
 });
 
-module.controller('GroupDetailCtrl', function(Dialog, $scope, realm, group, Group, Notifications, $location, $translate) {
+module.controller('GroupDetailCtrl', function(Dialog, $scope, realm, group, Group, Notifications, $location) {
     $scope.realm = realm;
 
     if (!group.attributes) {
@@ -276,7 +267,7 @@ module.controller('GroupDetailCtrl', function(Dialog, $scope, realm, group, Grou
             $scope.changed = false;
             convertAttributeValuesToString($scope.group);
             group = angular.copy($scope.group);
-            Notifications.success($translate.instant('group.edit.success'));
+            Notifications.success("Your changes have been saved to the group.");
         });
     };
 
@@ -319,7 +310,7 @@ module.controller('GroupDetailCtrl', function(Dialog, $scope, realm, group, Grou
 
 module.controller('GroupRoleMappingCtrl', function($scope, $http, $route, realm, group, clients, client, Client, Notifications, GroupRealmRoleMapping,
                                                    GroupClientRoleMapping, GroupAvailableRealmRoleMapping, GroupAvailableClientRoleMapping,
-                                                   GroupCompositeRealmRoleMapping, GroupCompositeClientRoleMapping, $translate) {
+                                                   GroupCompositeRealmRoleMapping, GroupCompositeClientRoleMapping) {
     $scope.realm = realm;
     $scope.group = group;
     $scope.selectedRealmRoles = [];
@@ -357,7 +348,7 @@ module.controller('GroupRoleMappingCtrl', function($scope, $http, $route, realm,
                 $scope.selectedClientMappings = [];
             }
             $scope.selectedRealmRolesToAdd = [];
-            Notifications.success($translate.instant('group.roles.add.success'));
+            Notifications.success("Role mappings updated.");
 
         });
     };
@@ -380,7 +371,7 @@ module.controller('GroupRoleMappingCtrl', function($scope, $http, $route, realm,
                 $scope.selectedClientMappings = [];
             }
             $scope.selectedRealmMappingsToRemove = [];
-            Notifications.success($translate.instant('group.roles.remove.success'));
+            Notifications.success("Role mappings updated.");
         });
     };
 
@@ -396,7 +387,7 @@ module.controller('GroupRoleMappingCtrl', function($scope, $http, $route, realm,
             $scope.realmComposite = GroupCompositeRealmRoleMapping.query({realm : realm.realm, groupId : group.id});
             $scope.realmRoles = GroupAvailableRealmRoleMapping.query({realm : realm.realm, groupId : group.id});
             $scope.selectedClientRolesToAdd = [];
-            Notifications.success($translate.instant('group.roles.add.success'));
+            Notifications.success("Role mappings updated.");
         });
     };
 
@@ -412,7 +403,7 @@ module.controller('GroupRoleMappingCtrl', function($scope, $http, $route, realm,
             $scope.realmComposite = GroupCompositeRealmRoleMapping.query({realm : realm.realm, groupId : group.id});
             $scope.realmRoles = GroupAvailableRealmRoleMapping.query({realm : realm.realm, groupId : group.id});
             $scope.selectedClientMappingsToRemove = [];
-            Notifications.success($translate.instant('group.roles.remove.success'));
+            Notifications.success("Role mappings updated.");
         });
     };
 
@@ -485,7 +476,7 @@ module.controller('GroupMembersCtrl', function($scope, realm, group, GroupMember
 
 });
 
-module.controller('DefaultGroupsCtrl', function($scope, $q, realm, Groups, GroupsCount, DefaultGroups, Notifications, $translate) {
+module.controller('DefaultGroupsCtrl', function($scope, $q, realm, Groups, GroupsCount, DefaultGroups, Notifications) {
     $scope.realm = realm;
     $scope.groupList = [];
     $scope.selectedGroup = null;
@@ -525,7 +516,7 @@ module.controller('DefaultGroupsCtrl', function($scope, $q, realm, Groups, Group
         Groups.query(queryParams, function(entry) {
             promiseGetGroups.resolve(entry);
         }, function() {
-            promiseGetGroups.reject($translate.instant('group.fetch.fail', {params: queryParams}));
+            promiseGetGroups.reject('Unable to fetch ' + queryParams);
         });
         promiseGetGroups.promise.then(function(groups) {
             $scope.groupList = groups;
@@ -537,7 +528,7 @@ module.controller('DefaultGroupsCtrl', function($scope, $q, realm, Groups, Group
         GroupsCount.query(countParams, function(entry) {
             promiseCount.resolve(entry);
         }, function() {
-            promiseCount.reject($translate.instant('group.fetch.fail', {params: countParams}));
+            promiseCount.reject('Unable to fetch ' + countParams);
         });
         promiseCount.promise.then(function(entry) {
             if(angular.isDefined(entry.count) && entry.count > $scope.pageSize) {
@@ -577,13 +568,13 @@ module.controller('DefaultGroupsCtrl', function($scope, $q, realm, Groups, Group
 
     $scope.addDefaultGroup = function() {
         if (!$scope.tree.currentNode) {
-            Notifications.error($translate.instant('group.default.add.error'));
+            Notifications.error('Please select a group to add');
             return;
         }
 
         DefaultGroups.update({realm: realm.realm, groupId: $scope.tree.currentNode.id}, function() {
             refreshDefaultGroups();
-            Notifications.success($translate.instant('group.default.add.success'));
+            Notifications.success('Added default group');
         });
 
     };
@@ -591,7 +582,7 @@ module.controller('DefaultGroupsCtrl', function($scope, $q, realm, Groups, Group
     $scope.removeDefaultGroup = function() {
         DefaultGroups.remove({realm: realm.realm, groupId: $scope.selectedGroup.id}, function() {
             refreshDefaultGroups();
-            Notifications.success($translate.instant('group.default.remove.success'));
+            Notifications.success('Removed default group');
         });
 
     };

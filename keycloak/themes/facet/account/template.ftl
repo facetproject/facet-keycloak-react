@@ -8,19 +8,9 @@
 
     <title>${msg("accountManagementTitle")}</title>
     <link rel="icon" href="${url.resourcesPath}/img/favicon.ico">
-    <#if properties.stylesCommon?has_content>
-        <#list properties.stylesCommon?split(' ') as style>
-            <link href="${url.resourcesCommonPath}/${style}" rel="stylesheet" />
-        </#list>
-    </#if>
     <#if properties.styles?has_content>
         <#list properties.styles?split(' ') as style>
             <link href="${url.resourcesPath}/${style}" rel="stylesheet" />
-        </#list>
-    </#if>
-    <#if properties.scriptsCommon?has_content>
-        <#list properties.scripts?split(' ') as script>
-            <script type="text/javascript" src="${url.resourcesCommonPath}/${script}"></script>
         </#list>
     </#if>
     <#if properties.scripts?has_content>
@@ -54,7 +44,7 @@
                             <li>
                         </#if>
                         <#if referrer?has_content && referrer.url?has_content><li><a href="${referrer.url}" id="referrer">${msg("backTo",referrer.name)}</a></li></#if>
-                        <li><a href="${url.logoutUrl}">${msg("doSignOut")}</a></li>
+                        <li><a href="${url.logoutUrl}"><i class="fas fa-sign-out-alt"></i> ${msg("doSignOut")}</a></li>
                     </ul>
                 </div>
             </div>
@@ -64,14 +54,14 @@
     <div class="container">
         <div class="bs-sidebar col-sm-3">
             <ul>
-                <li class="<#if active=='account'>active</#if>"><a href="${url.accountUrl}">${msg("account")}</a></li>
-                <#if features.passwordUpdateSupported><li class="<#if active=='password'>active</#if>"><a href="${url.passwordUrl}">${msg("password")}</a></li></#if>
-                <li class="<#if active=='totp'>active</#if>"><a href="${url.totpUrl}">${msg("authenticator")}</a></li>
-                <#if features.identityFederation><li class="<#if active=='social'>active</#if>"><a href="${url.socialUrl}">${msg("federatedIdentity")}</a></li></#if>
-                <li class="<#if active=='sessions'>active</#if>"><a href="${url.sessionsUrl}">${msg("sessions")}</a></li>
-                <li class="<#if active=='applications'>active</#if>"><a href="${url.applicationsUrl}">${msg("applications")}</a></li>
-                <#if features.log><li class="<#if active=='log'>active</#if>"><a href="${url.logUrl}">${msg("log")}</a></li></#if>
-                <#if realm.userManagedAccessAllowed && features.authorization><li class="<#if active=='authorization'>active</#if>"><a href="${url.resourceUrl}">${msg("myResources")}</a></li></#if>
+                <li class="<#if active=='account'>active</#if>"><a href="${url.accountUrl}"><i class="fas fa fa-user"></i> ${msg("account")}</a></li>
+                <#if features.passwordUpdateSupported><li class="<#if active=='password'>active</#if>"><a href="${url.passwordUrl}"><i class="fas fa fa-key"></i> ${msg("password")}</a></li></#if>
+                <li class="<#if active=='totp'>active</#if>"><a href="${url.totpUrl}"><i class="fas fa fa-qrcode"></i> ${msg("authenticator")}</a></li>
+                <#if features.identityFederation><li class="<#if active=='social'>active</#if>"><a href="${url.socialUrl}"><i class="fas fa fa-icons"></i> ${msg("federatedIdentity")}</a></li></#if>
+                <li class="<#if active=='sessions'>active</#if>"><a href="${url.sessionsUrl}"><i class="fas fa fa-clipboard-list"></i> ${msg("sessions")}</a></li>
+                <li class="<#if active=='applications'>active</#if>"><a href="${url.applicationsUrl}"><i class="fas fa fa-mobile-alt"></i> ${msg("applications")}</a></li>
+                <#if features.log><li class="<#if active=='log'>active</#if>"><a href="${url.logUrl}"><i class="fas fa fa-list"></i> ${msg("log")}</a></li></#if>
+                <#if realm.userManagedAccessAllowed && features.authorization><li class="<#if active=='authorization'>active</#if>"><a href="${url.resourceUrl}"><i class="fas fa fa-boxes"></i> ${msg("myResources")}</a></li></#if>
             </ul>
         </div>
 

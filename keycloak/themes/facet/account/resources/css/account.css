@@ -19,10 +19,10 @@ header .navbar {
 }
 
 .navbar-title {
-    background-image: url('../img/facet-logo-text.png');
-    height: 25px;
+    background-image: url('../img/facet-light-logo.png');
+    height: 37px;
     background-repeat: no-repeat;
-    width: 123px;
+    width: 154px;
     margin: 3px 10px 5px;
     text-indent: -99999px;
 }
